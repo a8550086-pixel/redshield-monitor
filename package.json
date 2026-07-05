@@ -1,21 +1,20 @@
-# Official Playwright image already contains Chromium + all required OS
-# dependencies, so npm install doesn't need root/apt access at runtime.
-FROM mcr.microsoft.com/playwright:v1.47.2-jammy
-
-WORKDIR /app
-
-# Skip re-downloading browsers during npm ci, they're already in this image.
-ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-ENV NODE_ENV=production
-
-COPY package*.json ./
-RUN npm ci --omit=dev || npm install --omit=dev
-
-COPY . .
-
-# Data directory for session + dedupe files (mount a Render persistent disk here).
-RUN mkdir -p /app/data
-
-EXPOSE 10000
-
-CMD ["npm", "start"]
+{
+  "name": "redshield-session-monitor",
+  "version": "1.0.0",
+  "description": "Monitors RedShield sessions page and forwards new session events via webhook",
+  "main": "index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "postinstall": "node install-browsers.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "playwright": "^1.47.0",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^2.7.0"
+  }
+}
